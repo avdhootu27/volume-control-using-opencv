@@ -10,6 +10,9 @@ mpHands = mp.solutions.hands
 hands = mpHands.Hands()
 mpDraw = mp.solutions.drawing_utils
 
+prevTime = 0
+currTime = 0
+
 while True:
     success, img = cap.read()
     RGBimg = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -19,7 +22,17 @@ while True:
     # if hand detected
     if results.multi_hand_landmarks:
         for handLandMark in results.multi_hand_landmarks:
+            for id, lm in enumerate(handLandMark.landmark):
+                height, width, channel = img.shape
+                cx, cy = int(lm.x*width), int(lm.y*height)
+
             mpDraw.draw_landmarks(img, handLandMark, mpHands.HAND_CONNECTIONS)      # to show dots & lines on hand
+
+    # showing FPS on image
+    currTime = time.time()
+    fps = 1/(currTime-prevTime)
+    prevTime = currTime
+    cv2.putText(img, str(int(fps)), (10, 70), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 2)
 
     cv2.imshow("Image", img)
 
