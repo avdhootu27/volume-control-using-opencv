@@ -3,6 +3,9 @@ import time
 import numpy as np
 import HandModule as hdm
 import math
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 # initializing variables
 camWidth, camHeight = 640, 480
@@ -15,13 +18,24 @@ cap.set(4, camHeight)
 # creating objects of hand detector class
 detector = hdm.handDetector()
 
+devices = AudioUtilities.GetSpeakers()
+interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+volume = cast(interface, POINTER(IAudioEndpointVolume))
+# volume.GetMute()
+# volume.GetMasterVolumeLevel()
+volumeRange = volume.GetVolumeRange()
+volume.SetMasterVolumeLevel(0, None)
+minVol = volumeRange[0]
+maxVol = volumeRange[1]
+volBar = 400
+
 while True:
     success, img = cap.read()
     img = detector.findHands(img)
     lmList = detector.findPositions(img, draw=False)
 
     if len(lmList) != 0:        # draw circles
-        print(lmList[4], lmList[8])
+        # print(lmList[4], lmList[8])
         x1, y1 = lmList[4][1], lmList[4][2]
         x2, y2 = lmList[8][1], lmList[8][2]
         cx, cy = (x1+x2)//2, (y1+y2)//2
@@ -34,7 +48,13 @@ while True:
         if length<30:
             cv2.circle(img, (cx, cy), 4, (0, 255, 0), cv2.FILLED)
 
-        print(length)
+        vol = np.interp(length, [30,220], [minVol, maxVol])
+        volBar = np.interp(length, [30,220], [400, 150])
+        print(length, vol)
+        volume.SetMasterVolumeLevel(vol, None)
+
+    cv2.rectangle(img, (50,150), (85,400), (0, 255, 0), 3)
+    cv2.rectangle(img, (50,int(volBar)), (85,400), (0, 255, 0), cv2.FILLED)
 
     # calculating fps
     cTime = time.time()
