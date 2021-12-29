@@ -4,4 +4,4 @@ In this project I have used a hand tracking module to detect hand and its land m
 
 The distance between tip of index finger and thumb is used as volume range and used [pycaw](https://github.com/AndreMiras/pycaw) library to set the volume.
 
-You can watch the video [here](https://drive.google.com/file/d/1INsOSwvpKXZpvlAQpHCQGaXEW22HqU7K/view?usp=sharing).
+You can watch the video [here](https://drive.google.com/file/d/1a6RQXoQGhCk_A6PB-XCmXJCwmu3e6NdQ/view?usp=sharing).
