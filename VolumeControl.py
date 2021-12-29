@@ -25,9 +25,9 @@ volume = cast(interface, POINTER(IAudioEndpointVolume))
 # volume.GetMasterVolumeLevel()
 volumeRange = volume.GetVolumeRange()
 volume.SetMasterVolumeLevel(0, None)
+
 minVol = volumeRange[0]
 maxVol = volumeRange[1]
-volBar = 400
 
 while True:
     success, img = cap.read()
@@ -48,13 +48,9 @@ while True:
         if length<30:
             cv2.circle(img, (cx, cy), 4, (0, 255, 0), cv2.FILLED)
 
-        vol = np.interp(length, [30,220], [minVol, maxVol])
-        volBar = np.interp(length, [30,220], [400, 150])
-        print(length, vol)
+        vol = np.interp(length, [50,220], [minVol, maxVol])
+        # print(length, vol)
         volume.SetMasterVolumeLevel(vol, None)
-
-    cv2.rectangle(img, (50,150), (85,400), (0, 255, 0), 3)
-    cv2.rectangle(img, (50,int(volBar)), (85,400), (0, 255, 0), cv2.FILLED)
 
     # calculating fps
     cTime = time.time()
@@ -65,3 +61,12 @@ while True:
     cv2.imshow("Image",img)
 
     cv2.waitKey(1)
+
+# volBar = 150
+# volPer = 100
+# volBar = np.interp(vol, [minVol, maxVol], [400, 150])
+# volPer = np.interp(vol, [minVol, maxVol], [0, 100])
+# drawing volume level
+# cv2.rectangle(img, (50,150), (85,400), (0, 255, 0), 3)
+# cv2.rectangle(img, (50,int(volBar)), (85,400), (0, 255, 0), cv2.FILLED)
+# cv2.putText(img, f'{int(volPer)} %', (40, 450), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 0, 0), 2)
